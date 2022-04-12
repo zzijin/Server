@@ -1,0 +1,23 @@
+{
+  "Network": {
+    "Listen": {
+      "ListenPort": "24242",
+      "ListenBacklog": "20"
+    },
+    "ConnPool": {
+      "ConnPoolSize": "5000"
+    },
+    "Conn": {
+      "HeartMaxInterval": "30000",
+      "WaitReconnectMaxInerval": "60000",
+      "FixedSendBufferSize": "1024",
+      "ReceiveBufferSize": "10240",
+      "SendBufferSize": "1024",
+      "SendMaxInterval": "50",
+      "NoMsgSleepTime": "150"
+    },
+    "Msg": {
+
+    }
+  }
+}

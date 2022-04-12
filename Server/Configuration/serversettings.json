@@ -1,0 +1,11 @@
+{
+  "Server": {
+    "ThreadPool": {
+      "IsSet": "false",
+      "MinWorkerThreads": "2",
+      "MaxWorkerThreads": "4",
+      "MinCompletionPortThreads": "2",
+      "MaxCompletionPortThreads": "4"
+    }
+  }
+}

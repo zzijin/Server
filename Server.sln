@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesigningScheme", "DesigningScheme", "{2F6C3E33-48C7-4788-9D8C-825F95D709FC}"
+	ProjectSection(SolutionItems) = preProject
+		FileAccessDesigningScheme.md = FileAccessDesigningScheme.md
+		PlanList.md = PlanList.md
+		README.md = README.md
+		UpdateLog.md = UpdateLog.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}.Debug|x64.ActiveCfg = Debug|x64
+		{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}.Debug|x64.Build.0 = Debug|x64
+		{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}.Release|x64.ActiveCfg = Release|x64
+		{9CA42AE5-2F92-4AB6-BB02-152E47832E8C}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB75F165-1BA9-4698-A15A-B75BF41C5803}
+	EndGlobalSection
+EndGlobal
