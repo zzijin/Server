@@ -8,5 +8,6 @@
 >4.日志模块：负责记录业务功能产生的日志信息并提供日志分析功能  
 >5.统计模块：负责统计业务功能各模块产生的信息(如：通讯模块单个链接或所有链接产生的数据量/消息包量/消息包延迟)以供分析统计  
 >[更新日志](https://github.com/zzijin/Server/blob/master/UpdateLog.md "更新日志")  
->! 项目已从.NET Framework迁移至.NET Core  
->! 新的技术(参照了ASP.NET的技术体系)：使用DI服务容器、使用内存缓存、使用EF Core...  
+! 由于git数据意外丢失，提交记录已被清除  
+! 项目已从.NET Framework迁移至.NET Core  
+! 新的技术(参照了ASP.NET的技术体系)：使用DI服务容器、使用内存缓存、使用EF Core...  
