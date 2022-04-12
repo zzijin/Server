@@ -19,6 +19,12 @@ namespace Server.NetworkModule.DTO
             FileSize = fileSize;
         }
 
+        public FileInfoMsg(int fileID,string msg)
+        {
+            FileID = fileID;
+            Msg = msg;
+        }
+
         public FileInfoMsg(int fileID,string fileName,long fileSize,string msg)
         {
             FileID = fileID;

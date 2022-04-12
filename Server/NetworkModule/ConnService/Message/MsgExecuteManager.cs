@@ -85,37 +85,42 @@ namespace Server.NetworkModule.ConnService.Message
 
         private static void ExecuteUploadOver(MsgBody data, ConnDelegate connDelegate)
         {
-            throw new NotImplementedException();
+            FileInfoMsg fileInfoMsg=JsonSerializer.Deserialize<FileInfoMsg>(data.MsgData);
+
         }
 
         private static void ExecuteUploadverify(MsgBody data, ConnDelegate connDelegate)
         {
-            throw new NotImplementedException();
+            PageInfoMsg pageInfoMsg = JsonSerializer.Deserialize<PageInfoMsg>(data.MsgData);
         }
 
         private static void ExecuteUploadData(MsgBody data, ConnDelegate connDelegate)
         {
-            throw new NotImplementedException();
+            FileDataMsg fileDataMsg=JsonSerializer.Deserialize<FileDataMsg>(data.MsgData);
         }
 
         private static void ExecuteUploadInfo(MsgBody data, ConnDelegate connDelegate)
         {
-            throw new NotImplementedException();
+            FileInfoMsg fileInfoMsg=JsonSerializer.Deserialize<FileInfoMsg>(data.MsgData);
+
         }
 
         private static void ExecuteDownloadFileVerify(MsgBody data, ConnDelegate connDelegate)
         {
-            throw new NotImplementedException();
+            PageInfoMsg pageInfoMsg = JsonSerializer.Deserialize<PageInfoMsg>(data.MsgData);
+
         }
 
         private static void ExecuteDownloadFileData(MsgBody data, ConnDelegate connDelegate)
         {
-            throw new NotImplementedException();
+            FileDataMsg fileDataMsg=JsonSerializer.Deserialize<FileDataMsg>(data.MsgData);
+
         }
 
         private static void ExecuteDownloadFileInfo(MsgBody data, ConnDelegate connDelegate)
         {
-            throw new NotImplementedException();
+            FileInfoMsg fileInfoMsg= JsonSerializer.Deserialize<FileInfoMsg>(data.MsgData);
+
         }
     }
 }
