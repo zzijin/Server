@@ -10,6 +10,8 @@ namespace Server.NetworkModule.ConnService.StatisticsInfo
     {
         IEnumerable<ConnInfo> connInfos;
 
+        internal IEnumerable<ConnInfo> ConnInfos { get => connInfos; }
+
         public ConnPoolInfo()
         {
 
@@ -25,22 +27,20 @@ namespace Server.NetworkModule.ConnService.StatisticsInfo
         /// 查询已使用链接的本次连接统计信息
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ConnOnceInfoDO> GetConnOnceInfo()
+        public IEnumerable<ConnInfo> GetUsedConnInfo()
         {
-            var query = from connInfo in connInfos
-                        where connInfo.OnceInfoDO!=null
-                         select connInfo.OnceInfoDO;
-            return query;
+            return from connInfo in connInfos
+                        where connInfo.OnceInfoDO.OnceNode!=null
+                         select connInfo;
         }
         /// <summary>
         /// 查询所有连接的总统计信息
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ConnTotalInfoDO> GetConnTotalInfo()
+        public IEnumerable<ConnInfo> GetConnPoolInfo()
         {
-            var query = from connInfo in connInfos
-                        select connInfo.TotalInfoDO;
-            return query;
+            return from connInfo in connInfos
+                        select connInfo;
         }
         #endregion
 

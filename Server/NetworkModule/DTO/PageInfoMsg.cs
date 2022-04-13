@@ -13,6 +13,6 @@ namespace Server.NetworkModule.DTO
         public long Pageoffset { get; set; }
         public int PageSize { get; set; }
         public byte[] PageHashCode { get; set; }
-        public bool PageVerification { get; set; }
+        public bool OperatingState { get; set; }
     }
 }

@@ -44,6 +44,15 @@ namespace Server.FileAccessModule
             }
             return null;
         }
+
+        public ReadOnlyMemory<byte> GetPageHashCode()
+        {
+            if(pageHashCode == null)
+            {
+                return null;
+            }
+            return new ReadOnlyMemory<byte>(pageHashCode);
+        }
         #endregion
 
         #region Set
@@ -55,6 +64,17 @@ namespace Server.FileAccessModule
         {
             PageComplementCacheData();
             return base.SetPageData();
+        }
+
+        public void SetPagehashCode()
+        {
+            if(pageCacheState == PageDataState.FullData)
+            {
+                using (SHA256 cng = SHA256.Create())
+                {
+                    pageHashCode = cng.ComputeHash(pageData);
+                }
+            }
         }
         #endregion
 
@@ -109,6 +129,7 @@ namespace Server.FileAccessModule
         public void PageFullCacheData()
         {
             pageCacheState = PageDataState.FullData;
+            SetPagehashCode();
         }
 
         public void PageErrorCacheData()

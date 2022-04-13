@@ -268,7 +268,7 @@ namespace Server.NetworkModule.ConnService.ConnPool
             return resourceManager.GetPublicFixedSendBuffer(type);
         }
 
-        public ConnPoolInfo GetConnPoolInfoArray()
+        public ConnPoolInfo GetConnPoolInfo()
         {
             return poolInfo;
         }

@@ -34,7 +34,12 @@ namespace Server.FileAccessModule
             //
         }
 
-        public ExecuteBaseInfoResult GetFile(ref FileDataVO fileDataVO)
+        public ExecuteBaseInfoResult GetFileInfo(ref FileInfoVO fileInfoVO)
+        {
+            return fileInfoRepository.GetFileInfo(ref fileInfoVO);
+        }
+
+        public ExecuteBaseInfoResult GetFileData(ref FileDataVO fileDataVO)
         {
             FileInfoVO fileInfoVO = fileDataVO.FileInfo;
             FileData fileData = null;
@@ -46,11 +51,24 @@ namespace Server.FileAccessModule
                 return executeBaseInfoResult;
             }
 
-            fileData.GetFileData(ref fileDataVO);
-            return executeBaseInfoResult;
+            return fileData.GetFileData(ref fileDataVO);
         }
 
-        public ExecuteBaseInfoResult SetTemporaryFile(ref FileDataVO fileDataVO)
+        public ExecuteBaseInfoResult GetFileVerification(ref PageInfoVO pageInfoVO)
+        {
+            FileData fileData = null;
+            FileInfoVO fileInfoVO = new FileInfoVO(pageInfoVO.FileID);
+
+            ExecuteBaseInfoResult executeBaseInfoResult = memoryCacheManager.GetCacheEntryData(ref fileInfoVO, out fileData);
+            if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Wait || executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+            {
+                return executeBaseInfoResult;
+            }
+
+            return fileData.GetPageHashCode(ref pageInfoVO);
+        }
+
+        public ExecuteBaseInfoResult SetTemporaryFileData(ref FileDataVO fileDataVO)
         {
             FileInfoVO fileInfoVO = fileDataVO.FileInfo;
             TemporaryFileData temporaryFileData = null;
@@ -66,16 +84,14 @@ namespace Server.FileAccessModule
             return executeBaseInfoResult;
         }
 
-        public ExecuteBaseInfoResult CreateTemporaryFile(ref FileDataVO fileDataVO)
+        public ExecuteBaseInfoResult CreateTemporaryFile(ref FileInfoVO fileInfoVO)
         {
-            FileInfoVO fileInfoVO = fileDataVO.FileInfo;
-
             return temporaryFileRepository.AddTemporaryFileInfo(ref fileInfoVO);
         }
 
         public ExecuteBaseInfoResult ConvertTemporaryFile(ref FileInfoVO fileInfoVO,out LinkedList<PageInfoVO> pageInfos)
         {
-            pageInfos = null;
+            pageInfos = new LinkedList<PageInfoVO>();
             TemporaryFileData temporaryFileData = null;
             FileInfoVO temporaryFileinfoVO = fileInfoVO;
             ExecuteBaseInfoResult executeBaseInfoResult = memoryCacheManager.GetCacheEntryTemporaryFileData(ref fileInfoVO, out temporaryFileData);

@@ -5,7 +5,7 @@
         /// <summary>
         /// 链接池大小
         /// </summary>
-        public static int CONNPOOL_SIZE = 1000;
+        public static int CONNPOOL_SIZE = 500;
         /// <summary>
         /// 链接等待最长队列
         /// </summary>

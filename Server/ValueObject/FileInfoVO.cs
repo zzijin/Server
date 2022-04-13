@@ -39,6 +39,13 @@ namespace Server.ValueObject
             fileSize = size;
         }
 
+        public FileInfoVO(int id, long offset, long size)
+        {
+            fileID = id;
+            fileSize = size;
+            fileOffset=offset;
+        }
+
         public FileInfoVO(int id, string name, string path, long size)
         {
             fileID = id;

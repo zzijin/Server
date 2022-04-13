@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Server.DataAccessModule.Repository;
+using Server.FileAccessModule.StatisticsInfo;
 
 namespace Server.FileAccessModule
 {
@@ -26,6 +27,7 @@ namespace Server.FileAccessModule
         private FileInfoRepository fileInfoRepository;
         private TemporaryFileRepository temporaryFileRepository;
         private FileBlockInfoRepository fileBlockInfoRepository;
+        private MemoryCacheInfo memoryCacheInfo;
 
         public MemoryCacheManager(IServiceProvider serviceProvider)
         {
@@ -33,6 +35,7 @@ namespace Server.FileAccessModule
             fileInfoRepository= serviceProvider.GetService<FileInfoRepository>();
             temporaryFileRepository= serviceProvider.GetService<TemporaryFileRepository>();
             fileBlockInfoRepository= serviceProvider.GetService<FileBlockInfoRepository>();
+            memoryCacheInfo = new MemoryCacheInfo();
         }
 
         /// <summary>
@@ -66,6 +69,7 @@ namespace Server.FileAccessModule
 
                     return temporaryFile;
                 });
+                memoryCacheInfo.AddMemoryEnTry(fileInfo.FileSize);
 
                 return new ExecuteBaseInfoResult
                 {
@@ -166,8 +170,8 @@ namespace Server.FileAccessModule
             //异步从磁盘读取所有文件
             FileData fileDataInfo = FileData.BuildFile(fileInfoVO);
 
-            cache.Set<FileData>(fileDataInfo.FileID, fileDataInfo);
-
+            cache.Set<FileData>(fileDataInfo.FileID, fileDataInfo,options);
+            memoryCacheInfo.AddMemoryEnTry(fileInfoVO.FileSize);
         }
 
         /// <summary>
@@ -179,8 +183,11 @@ namespace Server.FileAccessModule
         /// <param name="state"></param>
         private void FreeCacheCallBack(object key, object value, EvictionReason reason, object state)
         {
+            FileData fileData=value as FileData;
+
+            memoryCacheInfo.RemoveMemoryEntry(fileData.FileSize);
             //$"缓存:{key}已被逐出"
-            (value as FileData).Disposable();
+            fileData.Disposable();
         }
 
         // <summary>
@@ -192,6 +199,10 @@ namespace Server.FileAccessModule
         /// <param name="state"></param>
         private void FreeTempCacheCallBack(object key, object value, EvictionReason reason, object state)
         {
+            TemporaryFileData tempData=value as TemporaryFileData;
+
+            memoryCacheInfo.RemoveMemoryEntry(tempData.FileSize);
+
             //$"缓存:{key}已被逐出"
             (value as TemporaryFileData).Disposable();
         }

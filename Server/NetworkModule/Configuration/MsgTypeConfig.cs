@@ -89,6 +89,10 @@ namespace Server.NetworkModule.Configuration
         /// </summary>
         public static int MSG_TYPE_FILE_UPLOAD_VERIFY = 42;
         /// <summary>
+        /// 文件上传剩余数据
+        /// </summary>
+        public static int MSG_TYPE_FILE_UPLOAD_REMAIN = 43;
+        /// <summary>
         /// 文件上传完毕
         /// </summary>
         public static int MSG_TYPE_FILE_UPLOAD_OVER = 44;

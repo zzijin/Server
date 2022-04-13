@@ -2,6 +2,7 @@
 using Server.NetworkModule.ConnService.Connect;
 using Server.NetworkModule.ConnService.Message.MsgFormat;
 using Server.NetworkModule.DTO;
+using Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -86,41 +87,215 @@ namespace Server.NetworkModule.ConnService.Message
         private static void ExecuteUploadOver(MsgBody data, ConnDelegate connDelegate)
         {
             FileInfoMsg fileInfoMsg=JsonSerializer.Deserialize<FileInfoMsg>(data.MsgData);
+            
+            FileInfoVO fileInfoVO=new FileInfoVO(fileInfoMsg.FileID);
+            LinkedList<PageInfoVO> pageInfos;
+            ExecuteBaseInfoResult executeBaseInfoResult=connDelegate.FileAccessManager.ConvertTemporaryFile(ref fileInfoVO, out pageInfos);
 
+            if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Wait)
+            {
+                connDelegate.Conn.EnqueueToWaitExecuteMsgQueue(data);
+            }
+            else
+            {
+                fileInfoMsg.OperatingState= (executeBaseInfoResult.ExecuteResultState == ExecuteState.Success);
+
+                if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+                {
+                    fileInfoMsg.Msg = executeBaseInfoResult.ExecuteResultMsg;
+                }
+
+                byte[] backData = JsonSerializer.SerializeToUtf8Bytes(fileInfoMsg);
+                connDelegate.Conn.EnqueueToWaitSendMsgQueue(MsgPackManager.PackMsg(MsgTypeConfig.MSG_TYPE_FILE_UPLOAD_VERIFY, backData));
+
+                if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+                {
+                    if (pageInfos.Count > 0)
+                    {
+                        foreach (PageInfoVO pageInfo in pageInfos)
+                        {
+
+                            PageInfoMsg backPagesMsg = new PageInfoMsg()
+                            {
+                                FileInfoMsg = fileInfoMsg,
+                                PageNumber = pageInfo.PageIndex,
+                                Pageoffset = pageInfo.PageOffset,
+                                PageSize = pageInfo.PageSize,
+                                OperatingState = false,
+                            };
+
+                            backData = JsonSerializer.SerializeToUtf8Bytes(backPagesMsg);
+                            connDelegate.Conn.EnqueueToWaitSendMsgQueue(MsgPackManager.PackMsg(MsgTypeConfig.MSG_TYPE_FILE_UPLOAD_REMAIN, backData));
+                        }
+                    }
+                }
+            }
         }
 
         private static void ExecuteUploadverify(MsgBody data, ConnDelegate connDelegate)
         {
             PageInfoMsg pageInfoMsg = JsonSerializer.Deserialize<PageInfoMsg>(data.MsgData);
+
+            PageInfoVO pageInfoVO = new PageInfoVO(pageInfoMsg.FileInfoMsg.FileID, pageInfoMsg.PageNumber, pageInfoMsg.Pageoffset, pageInfoMsg.PageSize,pageInfoMsg.PageHashCode);
+            ExecuteBaseInfoResult executeBaseInfoResult=connDelegate.FileAccessManager.PageDataVerification(ref pageInfoVO);
+
+            if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Wait)
+            {
+                connDelegate.Conn.EnqueueToWaitExecuteMsgQueue(data);
+            }
+            else
+            {
+                pageInfoMsg.OperatingState = (executeBaseInfoResult.ExecuteResultState == ExecuteState.Success);
+                pageInfoMsg.PageHashCode = null;
+
+                if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+                {
+                    pageInfoMsg.FileInfoMsg.Msg = executeBaseInfoResult.ExecuteResultMsg;
+                }
+
+                byte[] backData = JsonSerializer.SerializeToUtf8Bytes(pageInfoMsg);
+                connDelegate.Conn.EnqueueToWaitSendMsgQueue(MsgPackManager.PackMsg(MsgTypeConfig.MSG_TYPE_FILE_UPLOAD_VERIFY, backData));
+            }
         }
 
         private static void ExecuteUploadData(MsgBody data, ConnDelegate connDelegate)
         {
             FileDataMsg fileDataMsg=JsonSerializer.Deserialize<FileDataMsg>(data.MsgData);
+
+            FileDataVO fileDataVO = new FileDataVO(
+                new FileInfoVO(fileDataMsg.FileID, fileDataMsg.FileOffset, fileDataMsg.FileSize),
+                fileDataMsg.FileData);
+            ExecuteBaseInfoResult executeBaseInfoResult=connDelegate.FileAccessManager.SetTemporaryFileData(ref fileDataVO);
+
+            if(executeBaseInfoResult.ExecuteResultState == ExecuteState.Wait)
+            {
+                connDelegate.Conn.EnqueueToWaitExecuteMsgQueue(data);
+            }
+            else
+            {
+                fileDataMsg.FileData = null;
+                fileDataMsg.OperatingState = (executeBaseInfoResult.ExecuteResultState==ExecuteState.Success);
+
+                if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+                {
+                    fileDataMsg.Msg = executeBaseInfoResult.ExecuteResultMsg;
+                }
+
+                byte[] backData = JsonSerializer.SerializeToUtf8Bytes(fileDataMsg);
+                connDelegate.Conn.EnqueueToWaitSendMsgQueue(MsgPackManager.PackMsg(MsgTypeConfig.MSG_TYPE_FILE_UPLOAD_DATA, backData));
+            }
         }
 
         private static void ExecuteUploadInfo(MsgBody data, ConnDelegate connDelegate)
         {
             FileInfoMsg fileInfoMsg=JsonSerializer.Deserialize<FileInfoMsg>(data.MsgData);
+            FileInfoVO fileInfoVO=new FileInfoVO(fileInfoMsg.FileName,fileInfoMsg.FileSize);
 
+            ExecuteBaseInfoResult executeBaseInfoResult=connDelegate.FileAccessManager.CreateTemporaryFile(ref fileInfoVO);
+
+            if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Wait)
+            {
+                connDelegate.Conn.EnqueueToWaitExecuteMsgQueue(data);
+            }
+            else
+            {
+                fileInfoMsg.FileID=fileInfoVO.FileID;
+                fileInfoMsg.OperatingState = (executeBaseInfoResult.ExecuteResultState == ExecuteState.Success);
+
+                if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+                {
+                    fileInfoMsg.Msg = executeBaseInfoResult.ExecuteResultMsg;
+                }
+
+                byte[] backData = JsonSerializer.SerializeToUtf8Bytes(fileInfoMsg);
+                connDelegate.Conn.EnqueueToWaitSendMsgQueue(MsgPackManager.PackMsg(MsgTypeConfig.MSG_TYPE_FILE_UPLOAD_INFO, backData));
+            }
         }
 
         private static void ExecuteDownloadFileVerify(MsgBody data, ConnDelegate connDelegate)
         {
             PageInfoMsg pageInfoMsg = JsonSerializer.Deserialize<PageInfoMsg>(data.MsgData);
+            PageInfoVO pageInfoVO=new PageInfoVO(pageInfoMsg.FileInfoMsg.FileID,pageInfoMsg.PageNumber,pageInfoMsg.Pageoffset,pageInfoMsg.PageSize);
 
+            ExecuteBaseInfoResult executeBaseInfoResult = connDelegate.FileAccessManager.GetFileVerification(ref pageInfoVO);
+
+            if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Wait)
+            {
+                connDelegate.Conn.EnqueueToWaitExecuteMsgQueue(data);
+            }
+            else
+            {
+                pageInfoMsg.PageHashCode = pageInfoVO.PageHashCode.ToArray();
+                pageInfoMsg.OperatingState = (executeBaseInfoResult.ExecuteResultState == ExecuteState.Success);
+
+                if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+                {
+                    pageInfoMsg.FileInfoMsg.Msg = executeBaseInfoResult.ExecuteResultMsg;
+                }
+
+                byte[] backData = JsonSerializer.SerializeToUtf8Bytes(pageInfoMsg);
+                connDelegate.Conn.EnqueueToWaitSendMsgQueue(MsgPackManager.PackMsg(MsgTypeConfig.MSG_TYPE_FILE_UPLOAD_INFO, backData));
+            }
         }
 
         private static void ExecuteDownloadFileData(MsgBody data, ConnDelegate connDelegate)
         {
             FileDataMsg fileDataMsg=JsonSerializer.Deserialize<FileDataMsg>(data.MsgData);
+            FileDataVO fileDataVO = new FileDataVO(new FileInfoVO(fileDataMsg.FileID, fileDataMsg.FileOffset, fileDataMsg.FileSize));
 
+            ExecuteBaseInfoResult executeBaseInfoResult = connDelegate.FileAccessManager.GetFileData(ref fileDataVO);
+
+            if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Wait)
+            {
+                connDelegate.Conn.EnqueueToWaitExecuteMsgQueue(data);
+            }
+            else
+            {
+                fileDataMsg.OperatingState = (executeBaseInfoResult.ExecuteResultState == ExecuteState.Success);
+
+                if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+                {
+                    fileDataMsg.Msg = executeBaseInfoResult.ExecuteResultMsg;
+                }
+
+                if(executeBaseInfoResult.ExecuteResultState == ExecuteState.Success)
+                {
+                    foreach(var packData in fileDataVO.FileData)
+                    {
+                        fileDataMsg.FileData = packData.ToArray();
+
+                        byte[] backData = JsonSerializer.SerializeToUtf8Bytes(fileDataMsg);
+                        connDelegate.Conn.EnqueueToWaitSendMsgQueue(MsgPackManager.PackMsg(MsgTypeConfig.MSG_TYPE_FILE_DOWNLOAD_INFO, backData));
+                    }
+                }
+            }
         }
 
         private static void ExecuteDownloadFileInfo(MsgBody data, ConnDelegate connDelegate)
         {
             FileInfoMsg fileInfoMsg= JsonSerializer.Deserialize<FileInfoMsg>(data.MsgData);
+            FileInfoVO fileInfoVO = new FileInfoVO(fileInfoMsg.FileID);
 
+            ExecuteBaseInfoResult executeBaseInfoResult = connDelegate.FileAccessManager.GetFileInfo(ref fileInfoVO);
+
+            if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Wait)
+            {
+                connDelegate.Conn.EnqueueToWaitExecuteMsgQueue(data);
+            }
+            else
+            {
+                fileInfoMsg.FileName = fileInfoVO.FileName;
+                fileInfoMsg.FileSize= fileInfoVO.FileSize;
+                fileInfoMsg.OperatingState = (executeBaseInfoResult.ExecuteResultState == ExecuteState.Success);
+
+                if (executeBaseInfoResult.ExecuteResultState == ExecuteState.Error)
+                {
+                    fileInfoMsg.Msg = executeBaseInfoResult.ExecuteResultMsg;
+                }
+
+                byte[] backData = JsonSerializer.SerializeToUtf8Bytes(fileInfoMsg);
+                connDelegate.Conn.EnqueueToWaitSendMsgQueue(MsgPackManager.PackMsg(MsgTypeConfig.MSG_TYPE_FILE_DOWNLOAD_INFO, backData));
+            }
         }
     }
 }

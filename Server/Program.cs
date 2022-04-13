@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -8,11 +9,12 @@ namespace Server
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
-        //[STAThread]
+        [STAThread]
         static void Main()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
 
+            Console.BufferWidth = 200;
             IOCManager iocManager = new IOCManager();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();

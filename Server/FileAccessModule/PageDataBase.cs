@@ -21,6 +21,10 @@ namespace Server.FileAccessModule
         /// 页数据
         /// </summary>
         private protected byte[] pageData;
+        /// <summary>
+        /// 页哈希码
+        /// </summary>
+        private protected byte[] pageHashCode;
 
         public int PageNumber { get => pageBaseInfo.PageNumber; }
         public long PageOffset { get => pageBaseInfo.PageOffset; }

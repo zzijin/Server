@@ -8,6 +8,6 @@ namespace Server.NetworkModule.Interface
     interface IConnPoolExternal
     {
         public void Init();
-        public ConnPoolInfo GetConnPoolInfoArray();
+        public ConnPoolInfo GetConnPoolInfo();
     }
 }

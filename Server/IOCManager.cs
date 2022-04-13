@@ -79,12 +79,15 @@ namespace Server
         public static IServiceCollection AddDataAcessService(this IServiceCollection serviceDescriptors)
         {
             return serviceDescriptors.AddSingleton<IDataAccessManager,DataAccessManager>()
-                .AddDbContextFactory<ServerDbContext >();
+                .AddDbContextFactory<ServerDbContext >()
+                .AddSingleton<FileInfoRepository>()
+                .AddSingleton<TemporaryFileRepository>()
+                .AddSingleton<FileBlockInfoRepository>();
         }
 
         public static IServiceCollection AddFileStreamService(this IServiceCollection serviceDescriptors)
         {
-            return serviceDescriptors.AddSingleton<IFileAccessManager,FileAccessManager>();
+            return serviceDescriptors.AddSingleton<FileAccessManager>();
         }
 
         public static IServiceCollection AddLogService(this IServiceCollection serviceDescriptors)
@@ -93,17 +96,14 @@ namespace Server
         }
         public static IServiceCollection AddNetworkService(this IServiceCollection serviceDescriptors)
         {
-            return serviceDescriptors.AddSingleton<INetworkManager,NetworkManager>()
+            return serviceDescriptors.AddSingleton<NetworkManager>()
                 .AddSingleton<IConnPoolExternal,ConnPool>()
-                .AddSingleton<IServerListen,ServerListen>()
-                .AddSingleton<FileInfoRepository>()
-                .AddSingleton<TemporaryFileRepository>()
-                .AddSingleton<FileBlockInfoRepository>();
+                .AddSingleton<IServerListen,ServerListen>();
 
         }
         public static IServiceCollection AddStatisticsService(this IServiceCollection serviceDescriptors)
         {
-            return serviceDescriptors.AddSingleton<IStatisticsManager,StatisticsManager>();
+            return serviceDescriptors.AddSingleton<StatisticsManager>();
         }
     }
 

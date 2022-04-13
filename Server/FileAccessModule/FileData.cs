@@ -163,6 +163,49 @@ namespace Server.FileAccessModule
                 };
             }
         }
+
+        public ExecuteBaseInfoResult GetPageHashCode(ref PageInfoVO pageInfoVO)
+        {
+            if (pageInfoVO.PageIndex < 0 || pageInfoVO.PageIndex >= filePages.Length)
+            {
+                return new ExecuteBaseInfoResult()
+                {
+                    ExecuteResultState = ExecuteState.Error,
+                    ExecuteResultMsg = "执行出错，页号越界",
+                };
+            }
+
+            if (filePages[pageInfoVO.PageIndex].PageOffset != (pageInfoVO.PageOffset + FileOffset) || filePages[pageInfoVO.PageIndex].PageSize != pageInfoVO.PageSize)
+            {
+                return new ExecuteBaseInfoResult()
+                {
+                    ExecuteResultState = ExecuteState.Error,
+                    ExecuteResultMsg = "执行出错，页数据错误",
+                };
+            }
+
+            ReadOnlyMemory<byte> hashCode = (filePages[pageInfoVO.PageIndex] as PageData).GetPageHashCode();
+            if (hashCode.Length>0)
+            {
+                pageInfoVO.PageHashCode= hashCode;
+                pageInfoVO.PageVerification = true;
+
+                return new ExecuteBaseInfoResult()
+                {
+                    ExecuteResultState = ExecuteState.Success
+                };
+            }
+            else
+            {
+                pageInfoVO.PageVerification = false;
+                return new ExecuteBaseInfoResult()
+                {
+                    ExecuteResultState = ExecuteState.Error,
+                    ExecuteResultMsg="当前页面丢失"
+                };
+            }
+
+        }
         #endregion
 
         #region 设置文件数据状态
