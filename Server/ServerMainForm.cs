@@ -35,10 +35,10 @@ namespace Server
                 {
                     switch (outputMode)
                     {
-                        case 0:serverManager.OutputConnPoolInfoToConsole(); break;
-                        case 1:serverManager.OutputUsedConnInfoToConsole(); break;
+                        case 0: serverManager.OutputConnPoolInfoToConsole(); break;
+                        case 1: serverManager.OutputUsedConnInfoToConsole(); break;
 
-                        default:serverManager.OutputConnPoolInfoToConsole(); break;
+                        default: serverManager.OutputConnPoolInfoToConsole(); break;
                     }
                     await Task.Delay(2000);
                 }

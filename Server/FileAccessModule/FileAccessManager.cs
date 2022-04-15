@@ -19,11 +19,11 @@ namespace Server.FileAccessModule
         public FileAccessManager(IServiceProvider serviceProvider)
         {
             InitFileConfiguration();
-            fileInfoRepository=serviceProvider.GetService<FileInfoRepository>();
-            temporaryFileRepository=serviceProvider.GetService<TemporaryFileRepository>();
-            fileBlockInfoRepository=serviceProvider.GetService<FileBlockInfoRepository>();
+            fileInfoRepository = serviceProvider.GetService<FileInfoRepository>();
+            temporaryFileRepository = serviceProvider.GetService<TemporaryFileRepository>();
+            fileBlockInfoRepository = serviceProvider.GetService<FileBlockInfoRepository>();
 
-            memoryCacheManager=new MemoryCacheManager(serviceProvider);
+            memoryCacheManager =new MemoryCacheManager(serviceProvider);
         }
 
         /// <summary>

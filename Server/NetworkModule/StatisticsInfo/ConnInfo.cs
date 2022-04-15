@@ -39,7 +39,7 @@ namespace Server.NetworkModule.ConnService.StatisticsInfo
             if (onceInfo.OnceNode != null)
             {
                 totalInfo.AddTotalInfo(onceInfo);
-                Console.WriteLine($"第{fixedInfo.FixedIndex}个链接断开,使用时长:{(long)(DateTime.Now - onceInfo.OnceStartUseTime).TotalMilliseconds}毫秒;断开原因:{msg}");
+                //Console.WriteLine($"第{fixedInfo.FixedIndex}个链接断开,使用时长:{(long)(DateTime.Now - onceInfo.OnceStartUseTime).TotalMilliseconds}毫秒;断开原因:{msg}");
                 onceInfo.ClearOnceNode();
             }
         }

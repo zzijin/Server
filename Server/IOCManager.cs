@@ -58,7 +58,6 @@ namespace Server
             //添加服务
             serviceDescriptors.AddServerService()
                 .AddDataAcessService()
-                .AddSingleton<ITestService, TestService>()
                 .AddFileStreamService()
                 .AddLogService()
                 .AddNetworkService()
@@ -104,24 +103,6 @@ namespace Server
         public static IServiceCollection AddStatisticsService(this IServiceCollection serviceDescriptors)
         {
             return serviceDescriptors.AddSingleton<StatisticsManager>();
-        }
-    }
-
-    public interface ITestService
-    {
-        public string Print();
-    }
-
-    public class TestService : ITestService
-    {
-        IConfiguration Configuration;
-        public TestService(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-        public string Print()
-        {
-            return Configuration.GetSection("ThreadPool").GetValue<string>("MinWorkerThreads");
         }
     }
 }

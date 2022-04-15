@@ -25,7 +25,7 @@
         /// <summary>
         /// 链接接收缓冲区大小，单位byte
         /// </summary>
-        public static int CONN_RECEIVE_BUFFER_SIZE = 10 * 1000;
+        public static int CONN_RECEIVE_BUFFER_SIZE = 20 * 1000;
         /// <summary>
         /// 链接发送缓冲区大小，单位byte
         /// </summary>
